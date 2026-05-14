@@ -28,6 +28,10 @@ export default function Game() {
       parent: gameRef.current as HTMLElement,
       backgroundColor: "#348a58",
       render: { pixelArt: true }, // 픽셀 아트를 크게 키워도 선명하게 유지
+      scale: {
+        mode: Phaser.Scale.FIT,       // 화면에 맞게 비율 유지하며 축소/확대
+        autoCenter: Phaser.Scale.CENTER_BOTH, // 가로/세로 가운데 정렬
+      },
       physics: {
         default: "arcade", // 2D 물리 엔진 사용 (중력, 충돌 등)
         arcade: {
@@ -155,11 +159,14 @@ export default function Game() {
   }, []);
 
   return (
-    <div className="rounded-xl overflow-hidden border-4 border-white shadow-2xl">
-      <div
-        ref={gameRef}
-        className="flex justify-center items-center h-full w-full"
-      />
+    <div className="w-full px-4 max-w-[960px]">
+      <div className="rounded-xl overflow-hidden border-4 border-white shadow-2xl w-full">
+        <div
+          ref={gameRef}
+          className="w-full"
+          style={{ aspectRatio: "960 / 720" }}
+        />
+      </div>
     </div>
   );
 }
