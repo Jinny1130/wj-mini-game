@@ -7,7 +7,7 @@ export function createGrid(
   mapHeight: number,
 ) {
   const grid = scene.add.graphics();
-  grid.lineStyle(1, GRID_COLOR, 1);
+  grid.lineStyle(2, GRID_COLOR, 0.3);
 
   for (let x = 0; x < mapWidth; x += GRID_SIZE) {
     grid.moveTo(x, 0);

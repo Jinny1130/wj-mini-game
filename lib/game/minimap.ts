@@ -21,7 +21,7 @@ export function createMinimap(
   // startFollow 대신 맵 중앙에 고정 → 전체 맵이 항상 다 보임
   minimap.centerOn(mapWidth / 2, mapHeight / 2);
   minimap.setBackgroundColor(0x002200);
-  minimap.alpha = 0.85;
+  minimap.alpha = 0.75;
 
   // 미니맵에만 보이는 플레이어 위치 표시 (빨간 점, 반지름 25px)
   const playerDot = scene.add.circle(player.x, player.y, 40, 0xff4444);
