@@ -1,18 +1,18 @@
 "use client";
 
 import dynamic from "next/dynamic";
+import Title from "@/components/Title";
+import Footer from "@/components/Footer";
 
+// Phaser는 브라우저 전용 API를 사용: 서버 렌더링을 끄고 동적으로 불러오기
 const Game = dynamic(() => import("@/components/Game"), { ssr: false });
-const Title = dynamic(() => import("@/components/Title"));
 
 export default function Home() {
   return (
     <main className="flex min-h-screen flex-col items-center justify-center bg-black">
       <Title />
       <Game />
-      <p className="mona12 text-gray-400 mt-4">
-        ⬆️➡️⬅️⬇️ 방향키를 눌러 캐릭터를 움직여보세요!
-      </p>
+      <Footer />
     </main>
   );
 }
