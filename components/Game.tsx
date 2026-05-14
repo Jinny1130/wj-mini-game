@@ -127,7 +127,8 @@ export default function Game() {
 
       // 이정표(텍스트)를 심어두기
       this.add.text(50, 50, "LEFT-TOP-END", {
-        color: "#ffffff",
+        color: "#fff",
+        fontSize: "20px",
         fontFamily: "ValMore",
       });
       this.add.text(50, 1950, "LEFT-BOTTOM-END", {
@@ -142,12 +143,12 @@ export default function Game() {
       });
       this.add.text(1750, 50, "RIGHT-TOP-END", {
         color: "#fff",
-        fontSize: "24px",
+        fontSize: "20px",
         fontFamily: "ValMore",
       });
       this.add.text(1700, 1950, "RIGHT-BOTTOM-END", {
         color: "#fff",
-        fontSize: "24px",
+        fontSize: "20px",
         fontFamily: "ValMore",
       });
 
@@ -213,6 +214,19 @@ export default function Game() {
       minimapBorder.strokeRect(786, 10, 164, 124);
       minimapBorder.setScrollFactor(0); // 카메라가 움직여도 UI는 고정
       minimap.ignore(minimapBorder); // 테두리는 미니맵 카메라에는 안 보이게
+
+      // 미니맵 클릭 → 해당 위치로 순간이동
+      this.input.on("pointerdown", (pointer: Phaser.Input.Pointer) => {
+        const inMinimap =
+          pointer.x >= 788 && pointer.x <= 788 + 160 &&
+          pointer.y >= 12  && pointer.y <= 12  + 120;
+
+        if (inMinimap) {
+          // 클릭한 화면 좌표를 미니맵 카메라 기준 월드 좌표로 변환
+          const worldPoint = minimap.getWorldPoint(pointer.x, pointer.y);
+          player.setPosition(worldPoint.x, worldPoint.y);
+        }
+      });
 
       // 키보드 준비
       if (this.input.keyboard) {
