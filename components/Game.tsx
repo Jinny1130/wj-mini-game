@@ -228,13 +228,14 @@ export default function Game() {
       }
 
       // 방향에 따라 알맞은 애니메이션 재생
-      // currentAnim?.key 로 지금 재생 중인 애니메이션 이름을 확인해서 다를 때만 교체
+      // isPlaying도 함께 확인: stop() 후에도 currentAnim?.key가 남아있어서
+      // "이미 같은 키니까 재생 안 해도 돼"로 잘못 판단하는 버그를 막기 위해
       if (cursors.up.isDown) {
-        if (player.anims.currentAnim?.key !== "owlet_climb") {
+        if (!player.anims.isPlaying || player.anims.currentAnim?.key !== "owlet_climb") {
           player.play("owlet_climb");
         }
       } else if (player.body.velocity.x !== 0 || player.body.velocity.y !== 0) {
-        if (player.anims.currentAnim?.key !== "owlet_walk") {
+        if (!player.anims.isPlaying || player.anims.currentAnim?.key !== "owlet_walk") {
           player.play("owlet_walk");
         }
       } else {
