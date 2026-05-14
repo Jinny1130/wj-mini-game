@@ -13,9 +13,6 @@ export function createAnimations(scene: Phaser.Scene) {
     frameRate: 8,
     repeat: -1,
   });
-
-  // 처음엔 가만히 서 있는 자세
-  // (등록만 하고 재생은 안 함 — 첫 프레임을 기본 자세로 사용)
 }
 
 // 애니메이션 상태 제어 — update() 에서 매 프레임 호출

@@ -1,9 +1,13 @@
-const GRID_SIZE = 80;
-const GRID_COLOR = 0x2c7a4c;
+const GRID_SIZE = 150;
+const GRID_COLOR = 0x555555;
 
-export function createGrid(scene: Phaser.Scene, mapWidth: number, mapHeight: number) {
+export function createGrid(
+  scene: Phaser.Scene,
+  mapWidth: number,
+  mapHeight: number,
+) {
   const grid = scene.add.graphics();
-  grid.lineStyle(2, GRID_COLOR, 1);
+  grid.lineStyle(1, GRID_COLOR, 1);
 
   for (let x = 0; x < mapWidth; x += GRID_SIZE) {
     grid.moveTo(x, 0);

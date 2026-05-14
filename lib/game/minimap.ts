@@ -24,7 +24,7 @@ export function createMinimap(
   minimap.alpha = 0.85;
 
   // 미니맵에만 보이는 플레이어 위치 표시 (빨간 점, 반지름 25px)
-  const playerDot = scene.add.circle(player.x, player.y, 25, 0xff4444);
+  const playerDot = scene.add.circle(player.x, player.y, 40, 0xff4444);
   scene.cameras.main.ignore(playerDot); // 메인 화면에는 안 보이게
 
   // 미니맵 테두리 (메인 카메라에만 보이는 UI)

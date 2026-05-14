@@ -20,7 +20,7 @@ export function createRocks(
     do {
       x = rng.between(50, mapWidth - 50);
       y = rng.between(50, mapHeight - 50);
-      scale = rng.between(2, 4);
+      scale = rng.between(3, 6);
     } while (
       Phaser.Math.Distance.Between(x, y, PLAYER_SPAWN.x, PLAYER_SPAWN.y) < PLAYER_SAFE_RADIUS ||
       placed.some(

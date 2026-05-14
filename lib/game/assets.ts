@@ -12,4 +12,10 @@ export function preloadAssets(scene: Phaser.Scene) {
   });
 
   scene.load.image("rock", "/images/object/rock2.png");
+
+  // 우주 배경 스프라이트시트 (3열×2행, 각 타일 128×256px)
+  scene.load.spritesheet("space_bg", "/images/bg/space_bg.png", {
+    frameWidth: 128,
+    frameHeight: 256,
+  });
 }

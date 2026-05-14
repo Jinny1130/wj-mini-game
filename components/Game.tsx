@@ -3,6 +3,7 @@
 import { useEffect, useRef } from "react";
 import Phaser from "phaser";
 import { preloadAssets } from "@/lib/game/assets";
+import { createBackground } from "@/lib/game/background";
 import { createGrid } from "@/lib/game/grid";
 import { createRocks } from "@/lib/game/rocks";
 import { createMilestones } from "@/lib/game/milestone";
@@ -26,7 +27,7 @@ export default function Game() {
       width: 960,
       height: 720,
       parent: gameRef.current as HTMLElement,
-      backgroundColor: "#348a58",
+      backgroundColor: "#000000",
       render: { pixelArt: true }, // 픽셀 아트를 크게 키워도 선명하게 유지
       scale: {
         mode: Phaser.Scale.FIT,       // 화면에 맞게 비율 유지하며 축소/확대
@@ -61,6 +62,9 @@ export default function Game() {
     }
 
     function create(this: Phaser.Scene) {
+      // 배경 먼저 그리기 (lib/game/background.ts)
+      createBackground(this, MAP_WIDTH, MAP_HEIGHT);
+
       // 그리드 그리기 (lib/game/grid.ts)
       createGrid(this, MAP_WIDTH, MAP_HEIGHT);
 
@@ -72,7 +76,7 @@ export default function Game() {
 
       // 주인공 캐릭터 생성 (맵 정중앙)
       player = this.physics.add.sprite(400, 300, "player");
-      player.setScale(1.5); // 캐릭터 크기를 3배로 키우기 (숫자를 바꾸면 더 크거나 작게 할 수 있어요)
+      player.setScale(2); // 캐릭터 크기 키우기
 
       // 애니메이션 등록 (lib/game/animation.ts)
       createAnimations(this);
