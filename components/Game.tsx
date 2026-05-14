@@ -49,13 +49,17 @@ export default function Game() {
 
     function preload(this: Phaser.Scene) {
       // 캐릭터 이미지를 불러오기
-      this.load.spritesheet("player", "/character/owlet_monster_walk.png", {
-        frameWidth: 32, // 캐릭터 그림 한 칸의 가로 크기 (캐릭터에 맞게 조절 가능)
-        frameHeight: 32, // 캐릭터 그림 한 칸의 세로 크기
-      });
+      this.load.spritesheet(
+        "player",
+        "/images/character/owlet_monster_walk.png",
+        {
+          frameWidth: 32, // 캐릭터 그림 한 칸의 가로 크기 (캐릭터에 맞게 조절 가능)
+          frameHeight: 32, // 캐릭터 그림 한 칸의 세로 크기
+        },
+      );
       this.load.spritesheet(
         "player_climb",
-        "/character/owlet_monster_climb.png",
+        "/images/character/owlet_monster_climb.png",
         {
           frameWidth: 32,
           frameHeight: 32,
@@ -63,7 +67,7 @@ export default function Game() {
       );
 
       // 바위 이미지 가져오기
-      this.load.image("rock", "/object/rock2.png");
+      this.load.image("rock", "/images/object/rock2.png");
     }
 
     function create(this: Phaser.Scene) {
@@ -122,16 +126,29 @@ export default function Game() {
       }
 
       // 이정표(텍스트)를 심어두기
-      this.add.text(100, 100, "시작점 (0, 0) 부근", {
+      this.add.text(50, 50, "LEFT-TOP-END", {
         color: "#ffffff",
+        fontFamily: "ValMore",
       });
-      this.add.text(1000, 1000, "중앙 구역 통과 중", {
+      this.add.text(50, 1950, "LEFT-BOTTOM-END", {
+        color: "#fff",
+        fontSize: "20px",
+        fontFamily: "ValMore",
+      });
+      this.add.text(1000, 1000, "MID-POINT", {
         color: "#ffff00",
         fontSize: "20px",
+        fontFamily: "ValMore",
       });
-      this.add.text(1800, 1800, "맵의 끝자락 🏁", {
-        color: "#ff0000",
+      this.add.text(1750, 50, "RIGHT-TOP-END", {
+        color: "#fff",
         fontSize: "24px",
+        fontFamily: "ValMore",
+      });
+      this.add.text(1700, 1950, "RIGHT-BOTTOM-END", {
+        color: "#fff",
+        fontSize: "24px",
+        fontFamily: "ValMore",
       });
 
       // 주인공 캐릭터 생성 (맵 정중앙)
@@ -231,11 +248,17 @@ export default function Game() {
       // isPlaying도 함께 확인: stop() 후에도 currentAnim?.key가 남아있어서
       // "이미 같은 키니까 재생 안 해도 돼"로 잘못 판단하는 버그를 막기 위해
       if (cursors.up.isDown) {
-        if (!player.anims.isPlaying || player.anims.currentAnim?.key !== "owlet_climb") {
+        if (
+          !player.anims.isPlaying ||
+          player.anims.currentAnim?.key !== "owlet_climb"
+        ) {
           player.play("owlet_climb");
         }
       } else if (player.body.velocity.x !== 0 || player.body.velocity.y !== 0) {
-        if (!player.anims.isPlaying || player.anims.currentAnim?.key !== "owlet_walk") {
+        if (
+          !player.anims.isPlaying ||
+          player.anims.currentAnim?.key !== "owlet_walk"
+        ) {
           player.play("owlet_walk");
         }
       } else {
@@ -251,9 +274,11 @@ export default function Game() {
   }, []);
 
   return (
-    <div
-      ref={gameRef}
-      className="flex justify-center items-center h-full w-full"
-    />
+    <div className="rounded-xl overflow-hidden border-4 border-white shadow-2xl">
+      <div
+        ref={gameRef}
+        className="flex justify-center items-center h-full w-full"
+      />
+    </div>
   );
 }
