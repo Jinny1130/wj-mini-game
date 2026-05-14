@@ -17,8 +17,8 @@ export default function Game() {
     // 게임 설정
     const config: Phaser.Types.Core.GameConfig = {
       type: Phaser.AUTO, // 브라우저가 알아서 가장 좋은 성능(Canvas/WebGL)을 골라줘요.
-      width: 800,
-      height: 600,
+      width: 960,
+      height: 720,
       parent: gameRef.current as HTMLElement,
       backgroundColor: "#348a58",
       render: { pixelArt: true }, // 픽셀 아트를 크게 키워도 선명하게 유지
@@ -44,6 +44,8 @@ export default function Game() {
     let player: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody;
     let cursors: Phaser.Types.Input.Keyboard.CursorKeys;
     let obstacles: Phaser.Physics.Arcade.StaticGroup;
+    let minimap: Phaser.Cameras.Scene2D.Camera;
+    let playerDot: Phaser.GameObjects.Arc; // 미니맵에만 보이는 플레이어 위치 표시 점
 
     function preload(this: Phaser.Scene) {
       // 캐릭터 이미지를 불러오기
@@ -51,10 +53,14 @@ export default function Game() {
         frameWidth: 32, // 캐릭터 그림 한 칸의 가로 크기 (캐릭터에 맞게 조절 가능)
         frameHeight: 32, // 캐릭터 그림 한 칸의 세로 크기
       });
-      this.load.spritesheet("player_climb", "/character/owlet_monster_climb.png", {
-        frameWidth: 32,
-        frameHeight: 32,
-      });
+      this.load.spritesheet(
+        "player_climb",
+        "/character/owlet_monster_climb.png",
+        {
+          frameWidth: 32,
+          frameHeight: 32,
+        },
+      );
 
       // 바위 이미지 가져오기
       this.load.image("rock", "/object/rock2.png");
@@ -87,7 +93,7 @@ export default function Game() {
       // "rock" 이미지로 장애물들 랜덤 배치
       // 고정 물체는 setScale() 후 refreshBody()를 꼭 불러야 히트박스도 같이 커짐
       // 시드(seed) 고정: 같은 시드 → 항상 같은 위치/크기로 배치됨 (숫자를 바꾸면 맵이 달라짐)
-      const rng = new Phaser.Math.RandomDataGenerator(['50']);
+      const rng = new Phaser.Math.RandomDataGenerator(["50"]);
 
       // 이미 배치된 돌들의 위치와 크기를 기억해두는 목록
       const placedRocks: { x: number; y: number; scale: number }[] = [];
@@ -107,7 +113,7 @@ export default function Game() {
           placedRocks.some(
             (rock) =>
               Phaser.Math.Distance.Between(x, y, rock.x, rock.y) <
-              (scale + rock.scale) * 20
+              (scale + rock.scale) * 20,
           )
         );
 
@@ -143,7 +149,10 @@ export default function Game() {
       // 위로 이동할 때 올라가는 애니메이션
       this.anims.create({
         key: "owlet_climb",
-        frames: this.anims.generateFrameNumbers("player_climb", { start: 0, end: 3 }),
+        frames: this.anims.generateFrameNumbers("player_climb", {
+          start: 0,
+          end: 3,
+        }),
         frameRate: 8,
         repeat: -1,
       });
@@ -163,6 +172,31 @@ export default function Game() {
       // 카메라가 주인공(player)을 졸졸 따라다니도록 설정
       this.cameras.main.startFollow(player, true, 0.1, 0.1);
 
+      // -- 미니맵 카메라 설정 --
+      // zoom 계산: 미니맵 높이(120) ÷ 맵 높이(2000) = 0.06 → 전체 맵이 딱 들어오는 배율
+      // 위치: 오른쪽 끝(960) - 미니맵 너비(160) - 여백(12) = 788, 위 여백 12
+      minimap = this.cameras
+        .add(788, 12, 160, 120)
+        .setZoom(0.06)
+        .setName("mini");
+
+      // startFollow 대신 맵 중앙에 고정 → 전체 맵이 항상 다 보임
+      minimap.centerOn(MAP_WIDTH / 2, MAP_HEIGHT / 2);
+      minimap.setBackgroundColor(0x002200); // 어두운 초록 배경
+      minimap.alpha = 0.85;
+
+      // 미니맵에만 보이는 플레이어 위치 표시 (빨간 점, 반지름 25px)
+      playerDot = this.add.circle(player.x, player.y, 25, 0xff4444);
+      this.cameras.main.ignore(playerDot); // 메인 화면에는 안 보이게
+
+      // 미니맵 테두리 (메인 카메라에만 보이는 UI)
+      const minimapBorder = this.add.graphics();
+      minimapBorder.lineStyle(4, 0xffffff, 1);
+      // 테두리는 미니맵보다 2px씩 바깥에 (788-2=786, 12-2=10)
+      minimapBorder.strokeRect(786, 10, 164, 124);
+      minimapBorder.setScrollFactor(0); // 카메라가 움직여도 UI는 고정
+      minimap.ignore(minimapBorder); // 테두리는 미니맵 카메라에는 안 보이게
+
       // 키보드 준비
       if (this.input.keyboard) {
         cursors = this.input.keyboard.createCursorKeys();
@@ -173,12 +207,15 @@ export default function Game() {
       // 캐릭터가 움직이는 속도
       const speed = 300;
 
+      // 미니맵 빨간 점을 플레이어 위치와 동기화
+      playerDot.setPosition(player.x, player.y);
+
       // 멈춤 상태로 시작
       player.setVelocity(0);
 
       if (cursors.left.isDown) {
         player.setVelocityX(-speed); // 왼쪽으로
-        player.setFlipX(true);  // 이미지를 좌우 반전 (왼쪽을 볼 때)
+        player.setFlipX(true); // 이미지를 좌우 반전 (왼쪽을 볼 때)
       } else if (cursors.right.isDown) {
         player.setVelocityX(speed); // 오른쪽으로
         player.setFlipX(false); // 이미지를 원래 방향으로 (오른쪽을 볼 때)
