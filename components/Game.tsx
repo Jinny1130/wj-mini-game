@@ -106,18 +106,43 @@ export default function Game() {
       // 멈춤 상태로 시작
       player.setVelocity(0);
 
-      if (cursors.left.isDown) {
-        player.setVelocityX(-speed); // 왼쪽으로
-        player.setFlipX(true); // 이미지를 좌우 반전 (왼쪽을 볼 때)
-      } else if (cursors.right.isDown) {
-        player.setVelocityX(speed); // 오른쪽으로
-        player.setFlipX(false); // 이미지를 원래 방향으로 (오른쪽을 볼 때)
-      }
+      const anyKeyDown = cursors.left.isDown || cursors.right.isDown || cursors.up.isDown || cursors.down.isDown;
 
-      if (cursors.up.isDown) {
-        player.setVelocityY(-speed); // 위로
-      } else if (cursors.down.isDown) {
-        player.setVelocityY(speed); // 아래로
+      if (anyKeyDown) {
+        // 키보드 이동
+        if (cursors.left.isDown) {
+          player.setVelocityX(-speed);
+          player.setFlipX(true);
+        } else if (cursors.right.isDown) {
+          player.setVelocityX(speed);
+          player.setFlipX(false);
+        }
+        if (cursors.up.isDown) {
+          player.setVelocityY(-speed);
+        } else if (cursors.down.isDown) {
+          player.setVelocityY(speed);
+        }
+      } else {
+        // 터치/클릭 이동 (키보드 입력이 없을 때만)
+        const pointer = this.input.activePointer;
+        const inMinimap =
+          pointer.x >= 828 && pointer.x <= 828 + 120 &&
+          pointer.y >= 12  && pointer.y <= 12  + 120;
+
+        if (pointer.isDown && !inMinimap) {
+          // 터치한 화면 좌표 → 맵 월드 좌표로 변환
+          const worldPoint = this.cameras.main.getWorldPoint(pointer.x, pointer.y);
+          const dx = worldPoint.x - player.x;
+          const dy = worldPoint.y - player.y;
+          const distance = Math.sqrt(dx * dx + dy * dy);
+
+          if (distance > 5) {
+            // 방향 벡터를 정규화해서 일정한 속도로 이동
+            player.setVelocityX((dx / distance) * speed);
+            player.setVelocityY((dy / distance) * speed);
+            player.setFlipX(dx < 0); // 왼쪽이면 이미지 반전
+          }
+        }
       }
 
       // 애니메이션 상태 업데이트 (lib/game/animation.ts)
